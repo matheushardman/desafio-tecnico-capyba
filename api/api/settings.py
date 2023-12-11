@@ -139,4 +139,19 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+SPECTACULAR_SETTINGS = {
+    'COMPONENT_SPLIT_REQUEST': True
+}
+
 AUTH_USER_MODEL = 'blog.User'
+
+# Mail configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '37d627f02ff432'
+EMAIL_HOST_PASSWORD = '13be628caaa86b'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+# Possibilidade de salvar o user e password num arquivo .env (Lembrar de executar o arquivo antes do runserver)
