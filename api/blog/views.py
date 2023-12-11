@@ -1,20 +1,23 @@
-import os
-from rest_framework import viewsets, generics, status, filters, pagination
+import os, jwt
+from rest_framework import views, viewsets, generics, status, filters, pagination
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import FileResponse
-from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.views import View
 from django.shortcuts import redirect
 from django.conf import settings
-from .serializers import UserSerializer, BlogSerializer
-from .models import BlogPost
-User = get_user_model()
+from django.urls import reverse
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from .serializers import UserSerializer, BlogSerializer, EmailVerificationSerializer
+from .models import User, BlogPost
+from .utils import Util
 
 # Criação de usuário
-class UserCreateView(generics.CreateAPIView):
+class UserRegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -23,9 +26,20 @@ class UserCreateView(generics.CreateAPIView):
         user = serializer.save()
         user.set_password(request.data['password'])
         user.save()
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status.HTTP_201_CREATED, headers=headers)
+        user_data = serializer.data
+      
+        user_created = User.objects.get(email=user_data['email'])
+        token = RefreshToken.for_user(user_created).access_token
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('verify-email')
+        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        email_body = 'Hi ' + user_created.username +' \nTo verify your accont use the link bellow \n'+ absurl
+        data = {'email_body': email_body, 'to_email': user_created.email,'email_subject': 'Verify your email'}
+        Util.send_email(data)
 
+        headers = self.get_success_headers(user_data)
+        return Response(user_data, status.HTTP_201_CREATED, headers=headers)
+    
 # Edição do usuário
 class UserUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
@@ -46,6 +60,29 @@ class UserUpdateView(generics.RetrieveUpdateAPIView):
 
         return Response(serializer.data)
 
+
+@extend_schema(
+    parameters=[OpenApiParameter(name='token', type=str, location=OpenApiParameter.QUERY, description='Description')]
+)
+
+class VerifyEmail(views.APIView):
+    serializer_class = EmailVerificationSerializer
+
+    def get(self, request):
+        token = request.query_params.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            user = User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Sucessfully activated'}, status.HTTP_200_OK)
+
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Expired, contact the admin'}, status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid token, contact the admin'}, status.HTTP_400_BAD_REQUEST)
+
 # CRUD do BlogPost
 
 class CustomPageNumberPagination(pagination.PageNumberPagination):
@@ -62,6 +99,9 @@ class BlogViewSet(viewsets.ModelViewSet):
     ordering = ['create_at']
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        return serializer.save(author=self.request.user)
 
 
 # Termos de uso e política de privacidade via pasta no projeto
