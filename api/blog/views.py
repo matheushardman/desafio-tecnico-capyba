@@ -87,13 +87,13 @@ class VerifyEmail(views.APIView):
 
 class CustomPageNumberPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 20
 
 class BlogViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, SearchFilter]
-    filterset_fields = ['title']
+    filterset_fields = ['author']
     search_fields = ['title', 'content']
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
