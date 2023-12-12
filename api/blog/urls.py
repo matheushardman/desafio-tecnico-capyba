@@ -4,7 +4,7 @@ from .views import UserRegisterView, UserUpdateView, PrivacyPolicyView, view_pdf
 
 router = routers.DefaultRouter()
 router.register(r'blog', BlogViewSet)
-router.register(r'restricted', RestrictBlogViewSet)
+router.register(r'blog/restrict', RestrictBlogViewSet)
 
 
 urlpatterns = [
