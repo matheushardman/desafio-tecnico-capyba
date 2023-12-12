@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, BlogPost
+from .models import User, BlogPost, RestrictBlogPost
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogPost
+        fields = ['id', 'title', 'author', 'content', 'create_at', 'update_at', 'draft']
+        extra_kwargs = {'author': {'read_only': True}}
+
+class RestrictBlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RestrictBlogPost
         fields = ['id', 'title', 'author', 'content', 'create_at', 'update_at', 'draft']
         extra_kwargs = {'author': {'read_only': True}}
 

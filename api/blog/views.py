@@ -12,9 +12,10 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.urls import reverse
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from .serializers import UserSerializer, BlogSerializer, EmailVerificationSerializer
-from .models import User, BlogPost
+from .serializers import UserSerializer, BlogSerializer, RestrictBlogSerializer, EmailVerificationSerializer
+from .models import User, BlogPost, RestrictBlogPost
 from .utils import Util
+from .permissions import IsVerifiedUser
 
 # Criação de usuário
 class UserRegisterView(generics.CreateAPIView):
@@ -99,6 +100,20 @@ class BlogViewSet(viewsets.ModelViewSet):
     ordering = ['create_at']
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        return serializer.save(author=self.request.user)
+    
+class RestrictBlogViewSet(viewsets.ModelViewSet):
+    queryset = RestrictBlogPost.objects.all()
+    serializer_class = RestrictBlogSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, SearchFilter]
+    filterset_fields = ['author']
+    search_fields = ['title', 'content']
+    ordering_fields = ('title', 'create_at')
+    ordering = ['create_at']
+    pagination_class = CustomPageNumberPagination
+    permission_classes = [IsAuthenticated, IsVerifiedUser]
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)

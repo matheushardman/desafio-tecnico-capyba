@@ -1,9 +1,10 @@
 from rest_framework import routers
 from django.urls import path, include
-from .views import UserRegisterView, UserUpdateView, PrivacyPolicyView, view_pdf, BlogViewSet, VerifyEmail
+from .views import UserRegisterView, UserUpdateView, PrivacyPolicyView, view_pdf, BlogViewSet, RestrictBlogViewSet, VerifyEmail
 
 router = routers.DefaultRouter()
 router.register(r'blog', BlogViewSet)
+router.register(r'restricted', RestrictBlogViewSet)
 
 
 urlpatterns = [
