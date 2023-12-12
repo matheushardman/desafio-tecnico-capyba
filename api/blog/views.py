@@ -19,6 +19,7 @@ from .permissions import IsVerifiedUser
 
 # Criação de usuário
 class UserRegisterView(generics.CreateAPIView):
+    
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
