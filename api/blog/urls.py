@@ -3,8 +3,8 @@ from django.urls import path, include
 from .views import UserRegisterView, UserUpdateView, BlogViewSet, RestrictBlogViewSet, VerifyEmail, ResendVerificationEmail, PrivacyPolicyView
 
 router = routers.DefaultRouter()
-router.register(r'blog', BlogViewSet)
-router.register(r'restricted-blog', RestrictBlogViewSet)
+router.register(r'blog', BlogViewSet, basename='blog')
+router.register(r'restrict-blog', RestrictBlogViewSet, basename='restrictblog')
 
 
 urlpatterns = [
