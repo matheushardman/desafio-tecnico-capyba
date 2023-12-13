@@ -8,7 +8,7 @@ def upload_image_profile(instance, filename):
 class User(AbstractUser):
     email = models.EmailField(unique=True, blank = False)
     name = models.CharField(max_length=100, blank = False)
-    #Profile_photo não pode ter blank = True e null = True
+    # Profile_photo não pode ter blank = True e null = True
     profile_photo = models.ImageField(upload_to=upload_image_profile, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     USERNAME_FIELD = "email"
