@@ -4,8 +4,9 @@ Repositório criado com a solução utilizando Python e Django para o desafio AP
 
 ## Sobre o desafio
 
-O objetivo do projeto é desenvolver uma API RESTful para retornar uma lista de itens, blog posts neste caso.
-As entidades presentes no banco de dados SQLite são:
+O objetivo do projeto é desenvolver uma API RESTful para retornar uma lista de itens, blog posts no caso para este repositório, permitindo o acesso apenas para usuários autenticados para lista de itens padrão e acesso apenas para usuários com e-mail verificado para lista de itens restrita, além de criação, edição de usuário e verificação por e-mail
+
+As entidades presentes no banco de dados são:
 
 - User
 - BlogPost
@@ -13,9 +14,25 @@ As entidades presentes no banco de dados SQLite são:
 
 
 
-Regras de relacionamento:
+### Regras do projeto:
 
+- O usuário logado deve conseguir visualizar todos os posts de blog da lista de itens padrão
 
+- O usuário logado deve conseguir atualizar e deletar apenas os posts de blog de sua autoria na lista de itens padrão
+
+- O usuário logado e verificado deve conseguir visualizar todos os posts de blog da lista de itens restrita
+
+- O usuário logado e verificado deve conseguir atualizar e deletar apenas os posts de blog de sua autoria na lista de itens padrão
+
+- As listas de itens padrão e restrita devem aceitar paginação a partir do tamanho de itens por página retornando o número total de objetos e a lista de objetos retornados
+
+- As listas de itens padrão e restrita devem aceitar um parâmetro de busca textual (Search) e filtrar os resultados nos campos relevantes (Title e Content no modelo atual)
+
+- As listas de itens padrão e restrita devem ter um filtro em campo relevante do modelo (Draft no modelo atual)
+
+- As listas de itens padrão e restrita devem aceitar um parametro de ordenação que receberá um ou mais campos relevantes para ordenar (Title e Create_at no modelo atual)
+
+  
 
 ### :desktop_computer: Tecnologias utilizadas
 
@@ -23,7 +40,7 @@ Regras de relacionamento:
 - Django Resf Framework (DRF)
 - DRF-simplejwt (Autenticação JWT)
 - Pillow (Upload de imagens)
-- Mailtrap ()
+- Mailtrap (Serviço para envio e recebimento de e-mail)
 - drf-spectacular (Documentação da API com Open API 3.0)
 
 ### :play_or_pause_button: Para rodar o projeto:
@@ -34,7 +51,7 @@ Regras de relacionamento:
 
    python -m venv venv ou python3 -m venv venv
 
-3. Acesse o ambiente virtual (venv) com o comando no terminal
+3. Acesse o ambiente virtual (venv) com o comando no CMD ou Terminal
 
    Windows: venv\Scripts\activate
 
@@ -44,14 +61,9 @@ Regras de relacionamento:
 
    pip install -r requirements.txt
 
-5. Entre na pasta do projeto chamado "api"
+5. Entre na pasta do projeto chamada "api"
 
-6. Crie um arquivo chamado .env e coloque as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap:
-
-   EMAIL_HOST_USER=COLOQUE_AQUI_SEU_USER
-   EMAIL_HOST_PASSWORD=COLE_AQUI_SEU_PASSWORD
-
-   Ex.: EMAIL_HOST_USER=xx0000000xxx00 e EMAIL_HOST_PASSWORD=x000x0xxx0000x
+6. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap
 
 7. Faça a migração dos modelos para o banco de dados
 
@@ -59,8 +71,12 @@ Regras de relacionamento:
 
    python manage.py migrate
 
-8. Rode o projeto com o seguinte comando
+8. Rode os testes unitários do projeto
+
+   python manage.py test
+
+9. Rode o projeto com o seguinte comando
 
    python manage.py runserver
 
-9. Acesse a página principal do projeto em http://127.0.0.1:8000/ ou http://localhost:8000/
+10. Acesse a página principal do projeto em http://127.0.0.1:8000/ ou http://localhost:8000/
