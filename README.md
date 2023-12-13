@@ -32,7 +32,6 @@ As entidades presentes no banco de dados são:
 
 - As listas de itens padrão e restrita devem aceitar um parametro de ordenação que receberá um ou mais campos relevantes para ordenar (Title e Create_at no modelo atual)
 
-  
 
 ### :desktop_computer: Tecnologias utilizadas
 
@@ -43,7 +42,7 @@ As entidades presentes no banco de dados são:
 - Mailtrap (Serviço para envio e recebimento de e-mail)
 - drf-spectacular (Documentação da API com Open API 3.0)
 
-### :play_or_pause_button: Para rodar o projeto:
+### :play_or_pause_button: Para rodar o projeto
 
 1. Após clonar o projeto, entre na pasta principal do projeto (desafio-tecnico-capyba) utilizando o CMD (Windows) ou Terminal (Linux/Mac)
 
