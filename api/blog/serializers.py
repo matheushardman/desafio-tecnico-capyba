@@ -10,8 +10,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'name', 'username', 'email', 'password', 'profile_photo']
-        extra_kwargs = {'password': {'read_only': True}}
+        fields = ['id', 'name', 'username', 'email', 'profile_photo']
 
 class BlogSerializer(serializers.ModelSerializer):
     author_name = serializers.SerializerMethodField()
