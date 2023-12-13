@@ -84,13 +84,13 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-                return Response({'email': 'Sucessfully verified'}, status.HTTP_200_OK)
-            return Response({'email': 'User is already verified'}, status.HTTP_400_BAD_REQUEST)
+                return Response({'email': 'Verificação de e-mail realizada com sucesso'}, status.HTTP_200_OK)
+            return Response({'email': 'O usuário já foi verificado anteriormente'}, status.HTTP_400_BAD_REQUEST)
 
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Verification token expired, resend verification email'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Token de verificação expirou, vá até a área de reenvio de email para verificação'}, status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Token invalido'}, status.HTTP_400_BAD_REQUEST)
 
 # Endpoint para reenvio do e-mail com um novo token para verificação do usuário
 class ResendVerificationEmail(views.APIView):
@@ -100,7 +100,7 @@ class ResendVerificationEmail(views.APIView):
         user = request.user
 
         if user.is_verified:
-            return Response({'detail': 'User is already verified.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'O usuário já foi verificado anteriormente'}, status=status.HTTP_400_BAD_REQUEST)
 
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
@@ -110,7 +110,7 @@ class ResendVerificationEmail(views.APIView):
         data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
         Util.send_email(data)
 
-        return Response({'detail': 'Verification email sent successfully.'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Email de verificação enviado com sucesso'}, status=status.HTTP_200_OK)
 
 # CRUD do BlogPost
 
