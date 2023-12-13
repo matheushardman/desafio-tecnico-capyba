@@ -64,7 +64,7 @@ As entidades presentes no banco de dados são:
 
 6. Crie a pasta **media** para armazenar as fotos de perfil dos usuários
 
-7. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap com o comando
+7. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap
 
 8. Faça a migração dos modelos para o banco de dados
 
@@ -74,7 +74,7 @@ As entidades presentes no banco de dados são:
 
 9. Rode os testes unitários do projeto
 
-   python manage.py test ou python3 manage.py migrate
+   python manage.py test ou python3 manage.py test
 
 10. Rode o projeto com o seguinte comando
 
