@@ -148,7 +148,11 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Desafio técnico da Capyba Software - Criação de uma API RESTful utilizando Python/Django',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True
+    'COMPONENT_SPLIT_REQUEST': True,
+     'EXTERNAL_DOCS': {
+        'description': 'Políticas de Privacidade e Termos de Uso',
+        'url': 'http://localhost:8000/api/privacy-policy',
+    }
 }
 
 AUTH_USER_MODEL = 'blog.User'
