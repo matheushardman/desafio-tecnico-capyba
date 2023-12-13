@@ -11,17 +11,17 @@ from django.views import View
 from django.conf import settings
 from django.urls import reverse
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
-from .serializers import UserSerializer, BlogSerializer, RestrictBlogSerializer, EmailVerificationSerializer
+from .serializers import UserRegisterSerializer, UserUpdateSerializer, BlogSerializer, RestrictBlogSerializer, EmailVerificationSerializer
 from .models import User, BlogPost, RestrictBlogPost
 from .utils import Util
 from .permissions import IsVerifiedUser
 
 # Criação de usuário
 @extend_schema(
-        description="Custom description for create user"
+        description="Since we have a Profile Photo to upload, the request body must be a multipart/form-data content. You can set this in right side of Request body below changing from application/json to multipart/form-data"
 )
 class UserRegisterView(generics.CreateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserRegisterSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -44,8 +44,11 @@ class UserRegisterView(generics.CreateAPIView):
         return Response(user_data, status.HTTP_201_CREATED, headers=headers)
     
 # Edição do usuário
+@extend_schema(
+        description="The request body must be a multipart/form-data content to guarantee you can change the Profile Photo if you need. You can set this in right side of Request body below changing from application/json to multipart/form-data"
+)
 class UserUpdateView(generics.UpdateAPIView):
-    serializer_class = UserSerializer
+    serializer_class = UserUpdateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -65,7 +68,8 @@ class UserUpdateView(generics.UpdateAPIView):
 
 
 @extend_schema(
-    parameters=[OpenApiParameter(name='token', type=str, location=OpenApiParameter.QUERY, description='Description')]
+    parameters=[OpenApiParameter(name='token', type=str, location=OpenApiParameter.QUERY, description='Description')],
+    description="User can verify account by validanting the token receveid in email"
 )
 
 class VerifyEmail(views.APIView):
@@ -103,9 +107,56 @@ class BlogViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        description="List all blog posts (User needs to be authenticated)",
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Create a new blog post for the logged in user (User needs to be authenticated)"
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Return a specific blog post by an blog ID (User needs to be authenticated)"
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Update a specific blog post by an blog ID (User needs to be authenticated)"
+    )
+    def update(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Partially update a specific blog post by an blog ID (User needs to be authenticated)"
+    )
+    def partial_update(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Delete a specific blog post by an blog ID (User needs to be authenticated)"
+    )
+    def destroy(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para deletar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
     
+# CRUD do RestrictBlogPost
+
 class RestrictBlogViewSet(viewsets.ModelViewSet):
     queryset = RestrictBlogPost.objects.all()
     serializer_class = RestrictBlogSerializer
@@ -119,6 +170,51 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
+    
+    @extend_schema(
+        description="List all restrict blog posts (User needs to be authenticated and email verified)",
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Create a new restrict blog post for the logged in user (User needs to be authenticated and email verified)"
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Return a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Update a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
+    )
+    def update(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Partially update a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
+    )
+    def partial_update(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        description="Delete a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
+    )
+    def destroy(self, request, *args, **kwargs):
+        blog = self.get_object()
+        if blog.author != self.request.user:
+            return Response({"detail": "Você não tem permissão para deletar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
+        return super().destroy(request, *args, **kwargs)
 
 @extend_schema(
         description="Retrieve the privacy policy document.",
