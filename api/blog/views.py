@@ -72,6 +72,7 @@ class UserUpdateView(generics.UpdateAPIView):
     description="User can verify account by validanting the token receveid in email"
 )
 
+# Endpoint para verificação do usuário através da validação do token enviado por email
 class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
 
@@ -83,12 +84,33 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Sucessfully activated'}, status.HTTP_200_OK)
+                return Response({'email': 'Sucessfully verified'}, status.HTTP_200_OK)
+            return Response({'email': 'User is already verified'}, status.HTTP_400_BAD_REQUEST)
 
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired, contact the admin'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Verification token expired, resend verification email'}, status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token, contact the admin'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid token'}, status.HTTP_400_BAD_REQUEST)
+
+# Endpoint para reenvio do e-mail com um novo token para verificação do usuário
+class ResendVerificationEmail(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if user.is_verified:
+            return Response({'detail': 'User is already verified.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        token = RefreshToken.for_user(user).access_token
+        current_site = get_current_site(request).domain
+        relative_link = reverse('verify-email')
+        abs_url = 'http://' + current_site + relative_link + "?token=" + str(token)
+        email_body = f'Hi {user.username},\nTo verify your account, use the link below:\n{abs_url}'
+        data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Verify your email'}
+        Util.send_email(data)
+
+        return Response({'detail': 'Verification email sent successfully.'}, status=status.HTTP_200_OK)
 
 # CRUD do BlogPost
 
@@ -220,6 +242,7 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
         description="Retrieve the privacy policy document.",
         responses={200: OpenApiResponse("PDF file")},
 )
+
 # Termos de uso e política de privacidade via pasta no projeto
 class PrivacyPolicyView(View):
     def get(self, request):

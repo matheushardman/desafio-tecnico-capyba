@@ -62,20 +62,22 @@ As entidades presentes no banco de dados são:
 
 5. Entre na pasta do projeto chamada "api"
 
-6. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap
+6. Crie a pasta **media** para armazenar as fotos de perfil dos usuários
 
-7. Faça a migração dos modelos para o banco de dados
+7. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap com o comando
 
-   python manage.py makemigrations
+8. Faça a migração dos modelos para o banco de dados
 
-   python manage.py migrate
+   python manage.py makemigrations ou python3 manage.py makemigrations
 
-8. Rode os testes unitários do projeto
+   python manage.py migrate ou python3 manage.py migrate
 
-   python manage.py test
+9. Rode os testes unitários do projeto
 
-9. Rode o projeto com o seguinte comando
+   python manage.py test ou python3 manage.py migrate
 
-   python manage.py runserver
+10. Rode o projeto com o seguinte comando
 
-10. Acesse a página principal do projeto em http://127.0.0.1:8000/ ou http://localhost:8000/
+​	python manage.py runserver ou python3 manage.py runserver
+
+11. Acesse a página principal do projeto em http://127.0.0.1:8000/ ou http://localhost:8000/
