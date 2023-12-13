@@ -8,18 +8,19 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.http import FileResponse
 from django.contrib.sites.shortcuts import get_current_site
 from django.views import View
-from django.shortcuts import redirect
 from django.conf import settings
 from django.urls import reverse
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .serializers import UserSerializer, BlogSerializer, RestrictBlogSerializer, EmailVerificationSerializer
 from .models import User, BlogPost, RestrictBlogPost
 from .utils import Util
 from .permissions import IsVerifiedUser
 
 # Criação de usuário
+@extend_schema(
+        description="Custom description for create user"
+)
 class UserRegisterView(generics.CreateAPIView):
-    
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -43,12 +44,12 @@ class UserRegisterView(generics.CreateAPIView):
         return Response(user_data, status.HTTP_201_CREATED, headers=headers)
     
 # Edição do usuário
-class UserUpdateView(generics.RetrieveUpdateAPIView):
+class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-       return self.request.user
+        return self.request.user
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -95,7 +96,7 @@ class BlogViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, SearchFilter]
-    filterset_fields = ['author']
+    filterset_fields = ['draft']
     search_fields = ['title', 'content']
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
@@ -109,7 +110,7 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
     queryset = RestrictBlogPost.objects.all()
     serializer_class = RestrictBlogSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, SearchFilter]
-    filterset_fields = ['author']
+    filterset_fields = ['draft']
     search_fields = ['title', 'content']
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
@@ -119,17 +120,14 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
 
-
+@extend_schema(
+        description="Retrieve the privacy policy document.",
+        responses={200: OpenApiResponse("PDF file")},
+)
 # Termos de uso e política de privacidade via pasta no projeto
 class PrivacyPolicyView(View):
     def get(self, request):
         pdf_path = os.path.join(settings.BASE_DIR, 'api/documents/privacy-policy.pdf')
         response = FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
-        response['Content-Disposition'] = 'inline; filename=documento.pdf'
+        response['Content-Disposition'] = 'inline; filename=privacy-policy.pdf'
         return response
-
-# Termos de uso e política de privacidade via Drive
-
-def view_pdf(request):
-    pdf_url = pdf_url = f"https://drive.google.com/uc?id=15AMkH17xmZmxJObfYREmLgwMTJ4HQSZk"
-    return redirect(pdf_url)
