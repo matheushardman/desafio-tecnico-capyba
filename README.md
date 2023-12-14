@@ -143,15 +143,15 @@ As entidades presentes no banco de dados são:
 
 - Após realizar login na ferramenta, você encontrará essa tela, basta clicar em Start Testing
 
-![image-20231214002015601](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002015601.png)
+<img src ="/images-readme/typora-testing.png">
 
 - Em My Inbox, abaixo de Integrations o botão onde está selecionado cURL, escolha a opção de integração com Django
 
-![image-20231214002315397](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002315397.png)
+<img src ="/images-readme/typora-data.png">
 
 - Copie as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD e cole no arquivo .env que está presente na pasta api do projeto, deixando apenas a informação sem '', conforme o exemplo deixado no arquivo
 - Salve o arquivo .env
 - O projeto estará apto para o envio de e-mails e recebimento de e-mails, você será capaz de receber os e-mails dos usuários que você criará na Inbox do mailtrap, como na foto do exemplo a seguir:
 
-![image-20231214002834798](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002834798.png)
+<img src ="/images-readme/typora-inbox.png">
 
