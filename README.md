@@ -44,40 +44,114 @@ As entidades presentes no banco de dados são:
 
 ### :play_or_pause_button: Para rodar o projeto
 
-1. Após clonar o projeto, entre na pasta principal do projeto (desafio-tecnico-capyba) utilizando o CMD (Windows) ou Terminal (Linux/Mac)
+1. Clone o projeto
 
-2. Crie o ambiente virtual Python com o comando:
+   ```
+   https://github.com/matheushardman/desafio-tecnico-capyba.git
+   ```
 
+2. Entre na pasta principal do projeto (desafio-tecnico-capyba) utilizando o CMD (Windows) ou Terminal (Linux/Mac)
+
+   ```
+   cd desafio-tecnico-capyba
+   ```
+
+3. Crie o ambiente virtual onde que viabilizará o ambiente para rodar o projeto:
+
+   ```python
    python -m venv venv ou python3 -m venv venv
+   ```
 
-3. Acesse o ambiente virtual (venv) com o comando no CMD ou Terminal
+4. Acesse o ambiente virtual (venv) com o comando no CMD ou Terminal
 
+   ```
    Windows: venv\Scripts\activate
+   ```
 
+   ```
    Linux/Mac: . venv/bin/activate ou source venv/bin/activate
+   ```
 
-4. Instale as dependências necessárias para rodar o projeto com o comando:
+5. Instale as dependências necessárias para rodar o projeto com o comando:
 
+   ```
    pip install -r requirements.txt
+   ```
 
-5. Entre na pasta do projeto chamada "api"
+6. Entre na pasta do projeto chamada "api"
 
-6. Crie a pasta **media** para armazenar as fotos de perfil dos usuários
+   ```
+   cd api/
+   ```
 
-7. Renomeie o arquivo .env-example para .env e substitua as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD que você gerou no mailtrap
+7. Crie a pasta **media** para armazenar as fotos de perfil dos usuários
 
-8. Faça a migração dos modelos para o banco de dados
+   ```
+   mkdir media
+   ```
 
+8. Renomeie o arquivo .env-example para .env e 
+
+   ```
+   cp .env-example .env ou copy .env-example .env
+   ```
+
+9. Substitua as informações no .env para EMAIL_HOST_USER e EMAIL_HOST_PASSWORD a partir dos dados que você gerou no [Mailtrap](https://mailtrap.io/) (Indicação de como utilizar no final do README)
+
+10. Faça a migração dos modelos para o banco de dados
+
+   ```python
    python manage.py makemigrations ou python3 manage.py makemigrations
+   ```
 
+   ```python
    python manage.py migrate ou python3 manage.py migrate
+   ```
 
-9. Rode os testes unitários do projeto
+11. Rode os testes unitários do projeto
 
-   python manage.py test ou python3 manage.py test
+    ```python
+    python manage.py test ou python3 manage.py test
+    ```
 
-10. Rode o projeto com o seguinte comando
+12. Rode o projeto
 
-​	python manage.py runserver ou python3 manage.py runserver
+    ```python
+    python manage.py runserver ou python3 manage.py runserver
+    ```
 
 11. Acesse a página principal do projeto em http://127.0.0.1:8000/ ou http://localhost:8000/
+
+### :flags: Fluxo para utilização do sistema
+
+##### Todas as informações a seguir podem ser verificados ao acessar a documentação na página principal do projeto
+
+- Visualização das políticas de privacidade e termos de uso  `/api/privacy-policy`
+- Criação do usuário utilizando `/api/user/register` , lembre-se de utilizar no Request body a opção multipart/form-data
+- Verificação de e-mail em `/api/user/verify-email` garantirá que o usuário poderá acessar a lista de blog restritos
+- Caso o token enviado por e-mail expirar, poderá ser gerado um novo token para o usuário logado em `/api/user/resend-verification-email`
+- Login do usuário cadastrado utilizando `/api/login/`, caso o token expire poderá utilizar o refresh token gerado após o login para renovar o token em `/api/login/refresh`
+- Edição do usuário poderá ser realizada em `/api/user/update`
+- A lista de blogs padrão disponível para usuários autenticados segue o padrão `/api/blog`
+- A lista de blogs restritos disponível para usuários autenticados e verificados segue o padrão `/api/restrict-blog`
+
+### :mailbox_with_mail: Utilizando o mailtrap para o serviço de e-mails
+
+- Cadastre-se no site de maneira gratuita em:
+
+  https://mailtrap.io/register/signup?ref=header
+
+- Após realizar login na ferramenta, você encontrará essa tela, basta clicar em Start Testing
+
+![image-20231214002015601](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002015601.png)
+
+- Em My Inbox, abaixo de Integrations o botão onde está selecionado cURL, escolha a opção de integração com Django
+
+![image-20231214002315397](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002315397.png)
+
+- Copie as informações de EMAIL_HOST_USER e EMAIL_HOST_PASSWORD e cole no arquivo .env que está presente na pasta api do projeto, deixando apenas a informação sem '', conforme o exemplo deixado no arquivo
+- Salve o arquivo .env
+- O projeto estará apto para o envio de e-mails e recebimento de e-mails, você será capaz de receber os e-mails dos usuários que você criará na Inbox do mailtrap, como na foto do exemplo a seguir:
+
+![image-20231214002834798](C:\Users\mathe\AppData\Roaming\Typora\typora-user-images\image-20231214002834798.png)
+
