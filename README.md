@@ -36,7 +36,7 @@ As entidades presentes no banco de dados são:
 ### :desktop_computer: Tecnologias utilizadas
 
 - Django
-- Django Resf Framework (DRF)
+- Django Rest Framework (DRF)
 - DRF-simplejwt (Autenticação JWT)
 - Pillow (Upload de imagens)
 - Mailtrap (Serviço para envio e recebimento de e-mail)
