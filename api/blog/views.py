@@ -14,7 +14,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiRespon
 from .serializers import UserRegisterSerializer, UserUpdateSerializer, BlogSerializer, RestrictBlogSerializer, EmailVerificationSerializer
 from .models import User, BlogPost, RestrictBlogPost
 from .utils import Util
-from .permissions import IsVerifiedUser
+from .permissions import IsVerifiedUser, IsAuthorOrReadOnly
 
 # Criação de usuário
 @extend_schema(
@@ -127,7 +127,7 @@ class BlogViewSet(viewsets.ModelViewSet):
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
     pagination_class = CustomPageNumberPagination
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
 
     @extend_schema(
         description="List all blog posts (User needs to be authenticated)",
@@ -151,27 +151,18 @@ class BlogViewSet(viewsets.ModelViewSet):
         description="Update a specific blog post by an blog ID (User needs to be authenticated)"
     )
     def update(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     @extend_schema(
         description="Partially update a specific blog post by an blog ID (User needs to be authenticated)"
     )
     def partial_update(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().partial_update(request, *args, **kwargs)
 
     @extend_schema(
         description="Delete a specific blog post by an blog ID (User needs to be authenticated)"
     )
     def destroy(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para deletar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -188,7 +179,7 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
     pagination_class = CustomPageNumberPagination
-    permission_classes = [IsAuthenticated, IsVerifiedUser]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsVerifiedUser]
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
@@ -215,27 +206,18 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
         description="Update a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
     )
     def update(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     @extend_schema(
         description="Partially update a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
     )
     def partial_update(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para editar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().partial_update(request, *args, **kwargs)
 
     @extend_schema(
         description="Delete a specific restrict blog post by an blog ID (User needs to be authenticated and email verified)"
     )
     def destroy(self, request, *args, **kwargs):
-        blog = self.get_object()
-        if blog.author != self.request.user:
-            return Response({"detail": "Você não tem permissão para deletar blog de outro usuário."}, status=status.HTTP_403_FORBIDDEN)
         return super().destroy(request, *args, **kwargs)
 
 @extend_schema(
