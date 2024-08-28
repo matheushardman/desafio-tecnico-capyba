@@ -179,7 +179,7 @@ class RestrictBlogViewSet(viewsets.ModelViewSet):
     ordering_fields = ('title', 'create_at')
     ordering = ['create_at']
     pagination_class = CustomPageNumberPagination
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly, IsVerifiedUser]
+    permission_classes = [IsAuthorOrReadOnly, IsVerifiedUser]
 
     def perform_create(self, serializer):
         return serializer.save(author=self.request.user)
