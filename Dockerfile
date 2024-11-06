@@ -4,6 +4,9 @@ FROM python:3.9-slim
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
 
+# Instala as dependências do sistema
+RUN apt-get update && apt-get install -y apt-clone
+
 # Copia o arquivo de requisitos para o diretório de trabalho
 COPY requirements.txt .
 
@@ -18,7 +21,7 @@ ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # Expõe a porta que a aplicação irá rodar
-EXPOSE 8000
+EXPOSE 5000
 
 # Comando para rodar a aplicação
 CMD ["flask", "run"]
