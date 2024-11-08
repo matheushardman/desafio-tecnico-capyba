@@ -18,3 +18,4 @@ resource "random_id" "key_suffix" {
 resource "aws_key_pair" "user_ec2_key" {
   key_name   = "user_ec2_${random_id.key_suffix.hex}"
   public_key = file("~/.ssh/id_rsa.pub")
+}

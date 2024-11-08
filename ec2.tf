@@ -6,6 +6,6 @@ resource "aws_instance" "api_demoday" {
   user_data              = file("script.sh")
 
   tags = {
-    Name = "api-demoday
+    Name = "api-demoday"
   }
 }
