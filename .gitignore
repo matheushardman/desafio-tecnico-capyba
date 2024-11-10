@@ -256,3 +256,10 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,django
+
+#ignore terraform
+.terraform
+*.lock.info
+*.hcl
+*.tfstate
+*.tfstate.backup
